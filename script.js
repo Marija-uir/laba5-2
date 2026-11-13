@@ -45,12 +45,12 @@ filterButtons.forEach(button => button.addEventListener('click', () => {
 
 // Содержание открывающихся карточек
 const works = [
-  ["Гран-при интерьерного конкурса", "В 2025 году моя концепция «Тихая гармония» получила Гран-при конкурса интерьерных проектов. Я разработала функциональную планировку квартиры, подобрала отделку, мебель и освещение, подготовила визуализации и представила проект жюри. Главной задачей было создать спокойное пространство, в котором каждый квадратный метр работает на комфорт.", "assets/project-winning-plan.webp", "https://www.pexels.com/photo/gold-trophy-in-close-up-photography-6532362/"],
+  ["Гран-при интерьерного конкурса", "В 2025 году моя концепция «Тихая гармония» получила Гран-при конкурса интерьерных проектов. Я разработала функциональную планировку квартиры, подобрала отделку, мебель и освещение, подготовила визуализации и представила проект жюри. Главной задачей было создать спокойное пространство, в котором каждый квадратный метр работает на комфорт.", "project-winning-plan.webp", "https://www.pexels.com/photo/gold-trophy-in-close-up-photography-6532362/"],
   ["32 авторских дизайн-проекта", "В портфолио собраны 32 проекта жилых пространств: от компактных студий до загородных домов. В каждом проекте я продумываю планировку, формирую общую концепцию, подбираю материалы и свет. Особенно люблю задачи, где нужно найти нестандартное решение для небольшого помещения.", "https://images.pexels.com/photos/8142052/pexels-photo-8142052.jpeg?auto=compress&cs=tinysrgb&w=1150", "https://www.pexels.com/photo/modern-apartment-interior-design-8142052/"],
   ["14 реализованных интерьеров", "Четырнадцать проектов уже воплощены в жизнь. Это квартиры, спальни, кухни-гостиные и отдельные функциональные зоны. Самый приятный этап работы для меня, когда готовый интерьер начинает жить: мебель встаёт на место, включается свет и появляется та атмосфера, ради которой всё задумывалось.", "https://images.pexels.com/photos/6207817/pexels-photo-6207817.jpeg?auto=compress&cs=tinysrgb&w=1150", "https://www.pexels.com/photo/light-and-modern-interior-of-big-living-room-6207817/"],
-  ["Интерьер в профильном журнале", "Моя работа попала в подборку интерьерного издания. В материале рассказали о проекте современной квартиры, его цветовой палитре и решениях для удобного хранения. Публикация стала важной возможностью показать свой подход широкой аудитории.", "assets/magazine-feature.webp", "https://www.pexels.com/photo/hands-holding-magazine-5418515/"],
-  ["Победа в конкурсе 3D-визуализаций", "В 2026 году моя визуализация спальни победила в профессиональной номинации. Для этого проекта я особенно тщательно работала с естественным освещением, фактурами и реалистичными оттенками материалов, чтобы изображения передавали атмосферу будущего интерьера.", "assets/bedroom-visualization.webp", "https://www.pexels.com/photo/modern-apartment-interior-with-bed-near-glass-door-to-kitchen-6444969/"],
-  ["Приглашённый спикер на дизайн-форуме", "На дизайн-форуме я выступила с презентацией о том, как сделать современный интерьер уютным и практичным. Показала примеры планировочных решений, рассказала о работе с освещением и о деталях, которые помогают связать разные зоны квартиры в единое пространство.", "assets/design-forum-photo.webp", ""]
+  ["Интерьер в профильном журнале", "Моя работа попала в подборку интерьерного издания. В материале рассказали о проекте современной квартиры, его цветовой палитре и решениях для удобного хранения. Публикация стала важной возможностью показать свой подход широкой аудитории.", "magazine-feature.webp", "https://www.pexels.com/photo/hands-holding-magazine-5418515/"],
+  ["Победа в конкурсе 3D-визуализаций", "В 2026 году моя визуализация спальни победила в профессиональной номинации. Для этого проекта я особенно тщательно работала с естественным освещением, фактурами и реалистичными оттенками материалов, чтобы изображения передавали атмосферу будущего интерьера.", "bedroom-visualization.webp", "https://www.pexels.com/photo/modern-apartment-interior-with-bed-near-glass-door-to-kitchen-6444969/"],
+  ["Приглашённый спикер на дизайн-форуме", "На дизайн-форуме я выступила с презентацией о том, как сделать современный интерьер уютным и практичным. Показала примеры планировочных решений, рассказала о работе с освещением и о деталях, которые помогают связать разные зоны квартиры в единое пространство.", "design-forum-photo.webp", ""]
 ];
 const dialog = document.querySelector('.work-dialog');
 const dialogClose = dialog.querySelector('.dialog-close');
@@ -90,7 +90,7 @@ window.addEventListener('scroll', () => {
 window.addEventListener('resize', updateProgress);
 updateProgress();
 
-// Выбор трёх идей: сохраняем локально и прикладываем к заявке
+// Выбор трёх деталей только на время текущего посещения; при новом открытии всё сбрасывается.
 const PRIORITY_STORAGE_KEY = 'maria-k-apartment-details-v2';
 const selectedPriorities = [];
 let savedPriorities = [];
@@ -120,17 +120,22 @@ function drawSavedChoices() {
     savedText.textContent = '';
   }
 }
-try {
-  const stored = JSON.parse(localStorage.getItem(PRIORITY_STORAGE_KEY) || '[]');
-  const allowed = priorityButtons.map(btn => btn.dataset.priority);
-  if (Array.isArray(stored) && stored.length === 3 && stored.every(x => allowed.includes(x))) {
-    savedPriorities = [...stored];
-    selectedPriorities.push(...stored);
-    priorityStatus.textContent = 'Ваш выбор сохранён и появится в заявке.';
-  }
-} catch (_) { /* На локальной странице хранилище может быть запрещено */ }
-drawPriorities();
-drawSavedChoices();
+// Старый выбор больше не загружаем: при входе все девять пунктов пустые.
+function resetPrioritiesOnEntry() {
+  selectedPriorities.length = 0;
+  savedPriorities = [];
+  try { localStorage.removeItem(PRIORITY_STORAGE_KEY); } catch (_) {}
+  priorityResult.textContent = 'Выберите важные для вас детали интерьера.';
+  priorityStatus.textContent = '';
+  prioritySave.textContent = 'Сохранить выбор';
+  drawPriorities();
+  drawSavedChoices();
+}
+resetPrioritiesOnEntry();
+// При возврате на страницу кнопкой «Назад» браузер иногда восстанавливает её из кэша.
+window.addEventListener('pageshow', event => {
+  if (event.persisted) resetPrioritiesOnEntry();
+});
 priorityButtons.forEach(button => button.addEventListener('click', () => {
   const value = button.dataset.priority;
   const position = selectedPriorities.indexOf(value);
@@ -153,7 +158,7 @@ priorityButtons.forEach(button => button.addEventListener('click', () => {
 prioritySave.addEventListener('click', () => {
   if (selectedPriorities.length !== 3) return;
   savedPriorities = [...selectedPriorities];
-  try { localStorage.setItem(PRIORITY_STORAGE_KEY, JSON.stringify(savedPriorities)); } catch (_) {}
+  // Сохраняем выбор для заявки только до следующего открытия страницы.
   drawSavedChoices();
   priorityResult.textContent = 'Выбор сохранён.';
   priorityStatus.textContent = 'Выбор добавлен к заявке. Он попадёт в письмо при отправке.';
